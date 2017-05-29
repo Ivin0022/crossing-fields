@@ -20,42 +20,28 @@ class square():
         return '(' + str(self.x) + ', ' + str(self.y) + ') -> ' + str(self.val)
 
     def pre_check(self, x, y, arr):
-        cell = arr[x][y]
         if (0 <= x < N) and (0 <= y < N):
-            return cell
-        else:
-            return self
+            cell = arr[x][y]
+            if not cell.visited:
+                return cell
+            else:
+                return None
 
-    def check_nearby_square(self, arr):
+    def check_nearby_squares(self, arr):
         print('checking.....    ')
         self.visited = True
-        # right
-        if (self.x + 1) < N:
-            right = arr[self.x + 1][self.y]
-            if abs(right.val - self.val) <= H and not right.visited:
-                print('right  -  ', end='')
-                return right
 
-        # bottom
-        if (self.y + 1) < N:
-            bottom = arr[self.x][self.y + 1]
-            if abs(bottom.val - self.val) <= H and not bottom.visited:
-                print('bottom  -  ', end='')
-                return bottom
+        nearby_squares = [
+            self.pre_check(self.x + 1, self.y, arr),  # right
+            self.pre_check(self.x, self.y + 1, arr),  # bottom
+            self.pre_check(self.x - 1, self.y, arr),  # left
+            self.pre_check(self.x, self.y - 1, arr),  # top
+        ]
 
-        # left
-        if (self.x - 1) >= 0:
-            left = arr[self.x - 1][self.y]
-            if abs(left.val - self.val) <= H and not left.visited:
-                print('left  -  ', end='')
-                return left
-
-        # top
-        if (self.y - 1) >= 0:
-            top = arr[self.x][self.y - 1]
-            if abs(top.val - self.val) <= H and not right.visited:
-                print('top  -  ', end='')
-                return top
+        for sqr in nearby_squares:
+            if sqr is not None:
+                if abs(sqr.val - self.val) <= H:
+                    return sqr
 
 
 field = []
@@ -71,7 +57,7 @@ for i in range(N):
 curent_square = field[0][0]
 
 while True:
-    next_square = curent_square.check_nearby_square(field)
+    next_square = curent_square.check_nearby_squares(field)
     print(curent_square)
 
     if not (curent_square.x == N - 1 and curent_square.y == N - 1):
